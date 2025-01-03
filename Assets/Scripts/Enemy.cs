@@ -15,6 +15,7 @@ public class Enemy : MonoBehaviour
     {
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
+        agent.avoidancePriority = Mathf.RoundToInt(agent.speed * 10); // Set the avoidance priority based on the speed
     }
 
     private void Update()
@@ -43,7 +44,8 @@ public class Enemy : MonoBehaviour
     {
         if (waypointIndex >= waypoint.Length)
         {
-            return transform.position;
+            waypointIndex = 0; // Reset the waypoint index
+            //return transform.position;
         }
         
         Vector3 targetPoint = waypoint[waypointIndex].position; // Get the next waypoint position
