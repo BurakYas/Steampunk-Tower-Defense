@@ -8,7 +8,7 @@ public class Enemy : MonoBehaviour
     private NavMeshAgent agent;
 
     [SerializeField] private float turnSpeed = 10f;
-    [SerializeField] private Transform[] waypoint;
+    [SerializeField] private Transform[] waypoints;
     private int waypointIndex;
 
     private void Awake()
@@ -16,6 +16,11 @@ public class Enemy : MonoBehaviour
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.avoidancePriority = Mathf.RoundToInt(agent.speed * 10); // Set the avoidance priority based on the speed
+    }
+
+    private void Start()
+    {
+        waypoints = FindFirstObjectByType<WaypointManager>().GetWaypoints(); // Get the waypoints from the WaypointManager
     }
 
     private void Update()
@@ -42,13 +47,13 @@ public class Enemy : MonoBehaviour
 
     private Vector3 GetNexWaypoint()
     {
-        if (waypointIndex >= waypoint.Length)
+        if (waypointIndex >= waypoints.Length)
         {
-            waypointIndex = 0; // Reset the waypoint index
-            //return transform.position;
+            //waypointIndex = 0; // Reset the waypoint index
+            return transform.position;
         }
         
-        Vector3 targetPoint = waypoint[waypointIndex].position; // Get the next waypoint position
+        Vector3 targetPoint = waypoints[waypointIndex].position; // Get the next waypoint position
         waypointIndex++; // Increase the waypoint index
 
         return targetPoint;
