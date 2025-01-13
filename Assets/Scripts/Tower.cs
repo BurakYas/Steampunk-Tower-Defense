@@ -11,9 +11,15 @@ public class Tower : MonoBehaviour
     [Header("Tower Setup")]
     [SerializeField] protected Transform towerHead;
     [SerializeField] protected float rotationSpeed = 10;
+    private bool canRotate;
 
     [SerializeField] protected float attackRange = 2.5f;
     [SerializeField] protected LayerMask whatIsEnemy;
+
+    protected virtual void Awake()
+    {
+        
+    }
 
     protected virtual void Update()
     {
@@ -65,8 +71,16 @@ public class Tower : MonoBehaviour
         return possibleTargets[randomIndex];
     }
 
+    public void EnableRotation(bool enable)
+    {
+        canRotate = enable;
+    }
+
     protected virtual void RotateTowardsEnemy()
     {
+        if (!canRotate)
+            return;
+
         if (currentEnemy == null)
             return;
 
@@ -79,9 +93,13 @@ public class Tower : MonoBehaviour
         towerHead.rotation = Quaternion.Euler(rotation); // Set the rotation of the tower head
     }
 
-    protected virtual void OnDrawGizmos()
+    protected Vector3 DirectionEnemyFrom(Transform startPoint)
     {
-        Gizmos.color = Color.red;
+        return (currentEnemy.position - startPoint.position).normalized;
+    }
+
+    protected virtual void OnDrawGizmos()
+    {        
         Gizmos.DrawWireSphere(transform.position, attackRange);
     }
 }
