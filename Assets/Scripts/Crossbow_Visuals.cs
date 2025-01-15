@@ -19,6 +19,11 @@ public class Crossbow_Visuals : MonoBehaviour
     [SerializeField] private Color startColor;
     [SerializeField] private Color endColor;
 
+    [Header("Rotor Visuals")]
+    [SerializeField] private Transform rotor;
+    [SerializeField] private Transform rotorUnloaded;
+    [SerializeField] private Transform rotorLoaded;
+
     [Header("Front Glow String")]
     [SerializeField] private LineRenderer frontString_L;
     [SerializeField] private LineRenderer frontString_R;
@@ -41,6 +46,8 @@ public class Crossbow_Visuals : MonoBehaviour
     [SerializeField] private Transform backEndPoint_L;
     [SerializeField] private Transform backEndPoint_R;
 
+    [SerializeField] private LineRenderer[] lineRenderers;
+
 
     private void Awake()
     {
@@ -49,14 +56,29 @@ public class Crossbow_Visuals : MonoBehaviour
         material = new Material(meshRenderer.material);
 
         meshRenderer.material = material; // Set the material to the new material
-        
+
+        UpdateMaterailsOnlineRenderers();
+
         StartCoroutine(ChangeEmission(1));
+    }
+
+    private void UpdateMaterailsOnlineRenderers()
+    {
+        foreach (var lr in lineRenderers)
+        {
+            lr.material = material;
+        }
     }
 
     private void Update()
     {
         UpdateEmissionColor();
 
+        UpdateStrings();
+    }
+
+    private void UpdateStrings()
+    {
         UpdateStringVisual(frontString_L, frontStartPoint_L, frontEndPoint_L);
         UpdateStringVisual(frontString_R, frontStartPoint_R, frontEndPoint_R);
 
@@ -75,7 +97,10 @@ public class Crossbow_Visuals : MonoBehaviour
 
     public void PlayReoladFX(float duration)
     {
-        StartCoroutine(ChangeEmission(duration / 2));
+        float newDuration = duration / 2;
+
+        StartCoroutine(ChangeEmission(newDuration));
+        StartCoroutine(UpdateRotorPosition(newDuration));
     }
 
     public void PlayAttackVFX(Vector3 startPoint, Vector3 endPoint)
@@ -111,6 +136,20 @@ public class Crossbow_Visuals : MonoBehaviour
         }
 
         currentIntensity = maxIntensity;
+    }
+
+    private IEnumerator UpdateRotorPosition(float duration)
+    {
+        float startTime = Time.time;
+
+        while (Time.time - startTime < duration)
+        {
+            float tValue = (Time.time - startTime) / duration;
+            rotor.position = Vector3.Lerp(rotorUnloaded.position, rotorLoaded.position, tValue); // Lerp between the unloaded and loaded position of the rotor
+            yield return null;
+        }
+
+        rotor.position = rotorLoaded.position;
     }
 
     private void UpdateStringVisual(LineRenderer lineRenderer, Transform startPoint, Transform endPoint)
