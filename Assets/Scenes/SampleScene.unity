@@ -4495,11 +4495,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tower_Crossbow
       objectReference: {fileID: 0}
-    - target: {fileID: 125924809408709175, guid: 0c8266d87d01e9947aa5b4d8ddb1b5c7,
-        type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 240697064000773229, guid: 0c8266d87d01e9947aa5b4d8ddb1b5c7,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -4549,21 +4544,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3280126410705260714, guid: 0c8266d87d01e9947aa5b4d8ddb1b5c7,
-        type: 3}
-      propertyPath: damage
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 3280126410705260714, guid: 0c8266d87d01e9947aa5b4d8ddb1b5c7,
-        type: 3}
-      propertyPath: enemyPriorityType
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3280126410705260714, guid: 0c8266d87d01e9947aa5b4d8ddb1b5c7,
-        type: 3}
-      propertyPath: dynamicTargetChange
-      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
