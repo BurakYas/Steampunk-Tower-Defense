@@ -10,48 +10,36 @@ public class WaveDetails
 
 public class EnemyManager : MonoBehaviour
 {
+    public List<EnemyPortal> enemyPortals;
     [SerializeField] private WaveDetails currentWave;
-    [Space]
-    [SerializeField] private Transform respawn;
-    [SerializeField] private float spawnCooldown;
-    private float spawnTimer;
-
-    private List<GameObject> enemiesToCreate;
 
     [Header("Enemy Prefabs")]
     [SerializeField] private GameObject basicEnemy;
     [SerializeField] private GameObject fastEnemy;
 
-    private void Start()
+    private void Awake()
     {
-        enemiesToCreate = NewEnemyWave();
+        enemyPortals = new List<EnemyPortal>(FindObjectsOfType<EnemyPortal>());
     }
 
-    private void Update()
+    [ContextMenu("Setup Next Wave")]
+    private void SetupNextWave()
     {
-        spawnTimer -= Time.deltaTime;
+        List<GameObject> newEnemies = NewEnemyWave();
+        int portalIndex = 0;
 
-        if (spawnTimer <= 0 && enemiesToCreate.Count > 0)
+        for (int i = 0; i < newEnemies.Count; i++)
         {
-            CreateEnemy();
-            spawnTimer = spawnCooldown;
+            GameObject enemyToAdd = newEnemies[i];
+            EnemyPortal portalToRecieveEnemy = enemyPortals[portalIndex];
+
+            portalToRecieveEnemy.GetEnemyList().Add(enemyToAdd);
+
+            portalIndex++;
+
+            if (portalIndex >= enemyPortals.Count)            
+                portalIndex = 0;            
         }
-    }
-
-    private void CreateEnemy()
-    {
-        GameObject randomEnemy = GetRandomEnemy();
-        GameObject newEnemy = Instantiate(randomEnemy, respawn.position, Quaternion.identity); // Instantiate the basic enemy prefab
-    }
-
-    private GameObject GetRandomEnemy()
-    {
-        int randomIndex = Random.Range(0, enemiesToCreate.Count); // Get a random index from the list of enemies
-        GameObject choosenEnemy = enemiesToCreate[randomIndex]; // Get the enemy from the list
-
-        enemiesToCreate.Remove(choosenEnemy);
-
-        return choosenEnemy;
     }
 
     private List<GameObject> NewEnemyWave()

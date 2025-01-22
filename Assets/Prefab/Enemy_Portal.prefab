@@ -273,8 +273,9 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5182694179091974038}
+  - component: {fileID: 4802602466907187147}
   m_Layer: 0
-  m_Name: Enemies_Portal
+  m_Name: Enemy_Portal
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -298,3 +299,15 @@ Transform:
   - {fileID: 9027137628706095403}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: -90, z: 0}
+--- !u!114 &4802602466907187147
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8119961037556862238}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4774fda4571bf47488c50a4a4d1a1c6b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
