@@ -10,16 +10,23 @@ public class WaveDetails
 
 public class EnemyManager : MonoBehaviour
 {
-    public List<EnemyPortal> enemyPortals;
-    [SerializeField] private WaveDetails currentWave;
+    [SerializeField] private WaveDetails[] levelWaves;
+    private int waveIndex;
 
     [Header("Enemy Prefabs")]
     [SerializeField] private GameObject basicEnemy;
     [SerializeField] private GameObject fastEnemy;
 
+    private List<EnemyPortal> enemyPortals;
+
     private void Awake()
     {
         enemyPortals = new List<EnemyPortal>(FindObjectsOfType<EnemyPortal>());
+    }
+
+    private void Start()
+    {
+        SetupNextWave();
     }
 
     [ContextMenu("Setup Next Wave")]
@@ -28,12 +35,15 @@ public class EnemyManager : MonoBehaviour
         List<GameObject> newEnemies = NewEnemyWave();
         int portalIndex = 0;
 
+        if (newEnemies == null)
+            return;
+
         for (int i = 0; i < newEnemies.Count; i++)
         {
             GameObject enemyToAdd = newEnemies[i];
             EnemyPortal portalToRecieveEnemy = enemyPortals[portalIndex];
 
-            portalToRecieveEnemy.GetEnemyList().Add(enemyToAdd);
+            portalToRecieveEnemy.AddEnemy(enemyToAdd);
 
             portalIndex++;
 
@@ -44,17 +54,25 @@ public class EnemyManager : MonoBehaviour
 
     private List<GameObject> NewEnemyWave()
     {
+        if (waveIndex >= levelWaves.Length)
+        {
+            Debug.LogWarning("No more waves to spawn");
+            return null;
+        }
+
         List<GameObject> newEnemyList = new List<GameObject>(); // Create a new list of enemies
 
-        for (int i = 0; i < currentWave.basicEnemy; i++)
+        for (int i = 0; i < levelWaves[waveIndex].basicEnemy; i++)
         {
             newEnemyList.Add(basicEnemy); // Add the basic enemy prefab to the list
         }
 
-        for (int i = 0; i < currentWave.fastEnemy; i++)
+        for (int i = 0; i < levelWaves[waveIndex].fastEnemy; i++)
         {
             newEnemyList.Add(fastEnemy); // Add the fast enemy prefab to the list
         }
+
+        waveIndex++;
 
         return newEnemyList;
     }

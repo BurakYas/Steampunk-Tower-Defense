@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -13,8 +15,9 @@ public class Enemy : MonoBehaviour, IDamagable
 
     [Header("Movement")]
     [SerializeField] private float turnSpeed = 10f;
-    [SerializeField] private Transform[] waypoints;
-    private int waypointIndex;
+    [SerializeField] private List<Transform> myWayPoints;
+    private int nextWaypointIndex;
+    private int currentWaypointIndex;
 
     private float totalDistance;
 
@@ -24,10 +27,15 @@ public class Enemy : MonoBehaviour, IDamagable
         agent.updateRotation = false;
         agent.avoidancePriority = Mathf.RoundToInt(agent.speed * 10); // Set the avoidance priority based on the speed
     }
-
-    private void Start()
+    
+    public void SetupEnemy(List<Waypoint> newWaypoints)
     {
-        waypoints = FindFirstObjectByType<WaypointManager>().GetWaypoints(); // Get the waypoints from the WaypointManager
+        myWayPoints = new List<Transform>();
+
+        foreach (var point in newWaypoints)
+        {
+            myWayPoints.Add(point.transform);
+        }
 
         CollectTotalDistance();
     }
@@ -37,20 +45,37 @@ public class Enemy : MonoBehaviour, IDamagable
         FaceTarget(agent.steeringTarget);
 
         // Check if the agent has reached the destination
-        if (agent.remainingDistance < .5f)
+        if (ShouldChangeWaypoint())
         {
             // Check if the agent has reached the last waypoint
             agent.SetDestination(GetNexWaypoint());
         }
     }
 
+    private bool ShouldChangeWaypoint()
+    {
+        if (nextWaypointIndex >= myWayPoints.Count)
+            return false;
+
+        if (agent.remainingDistance < .5f)
+            return true;
+
+        Vector3 currentWaypoint = myWayPoints[currentWaypointIndex].position;
+        Vector3 nextWaypoint = myWayPoints[nextWaypointIndex].position;
+
+        float distanceToNextWaypoint = Vector3.Distance(transform.position, nextWaypoint);
+        float distanceBetweenWaypoints = Vector3.Distance(currentWaypoint, nextWaypoint);
+
+        return distanceBetweenWaypoints > distanceToNextWaypoint;
+    }
+
     public float DistanceToFinishLine() => totalDistance + agent.remainingDistance; // Return the distance to the finish line
 
     private void CollectTotalDistance()
     {
-        for (int i = 0; i < waypoints.Length - 1; i++)
+        for (int i = 0; i < myWayPoints.Count - 1; i++)
         {
-            float distance = Vector3.Distance(waypoints[i].position, waypoints[i + 1].position); // Calculate the total distance between waypoints
+            float distance = Vector3.Distance(myWayPoints[i].position, myWayPoints[i + 1].position); // Calculate the total distance between waypoints
             totalDistance += distance;
         }
     }
@@ -67,21 +92,22 @@ public class Enemy : MonoBehaviour, IDamagable
 
     private Vector3 GetNexWaypoint()
     {
-        if (waypointIndex >= waypoints.Length)
+        if (nextWaypointIndex >= myWayPoints.Count)
         {
             //waypointIndex = 0; // Reset the waypoint index
             return transform.position;
         }
 
-        Vector3 targetPoint = waypoints[waypointIndex].position; // Get the next waypoint position
+        Vector3 targetPoint = myWayPoints[nextWaypointIndex].position; // Get the next waypoint position
 
-        if (waypointIndex > 0)
+        if (nextWaypointIndex > 0)
         {
-            float distance = Vector3.Distance(waypoints[waypointIndex - 1].position, waypoints[waypointIndex].position);
+            float distance = Vector3.Distance(myWayPoints[nextWaypointIndex - 1].position, myWayPoints[nextWaypointIndex].position);
             totalDistance -= distance; // Subtract the distance from the total distance
         }
 
-        waypointIndex++; // Increase the waypoint index
+        nextWaypointIndex = nextWaypointIndex + 1; // Increase the waypoint index
+        currentWaypointIndex = nextWaypointIndex - 1;
 
         return targetPoint;
     }
